@@ -1,0 +1,26 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Django
+db.sqlite3
+db.sqlite3-journal
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# User uploads and generated files
+media/
+outputs/
+data/
+tmp/
+temp/
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
