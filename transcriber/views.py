@@ -3,4 +3,4 @@ from django.shortcuts import render
 
 # Create your views here.
 def home(request):
-    return HttpResponse("Meeting Transcriber is running.")
+    return render(request, "transcriber/index.html")

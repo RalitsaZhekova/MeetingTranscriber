@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Meeting Transcriber{% endblock %}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+            line-height: 1.6;
+        }
+
+        header {
+            margin-bottom: 30px;
+        }
+
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .muted {
+            color: #666;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        button {
+            padding: 10px 14px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><a href="{% url 'home' %}">Meeting Transcriber</a></h1>
+        <p class="muted">Upload recordings and generate speaker-labeled transcripts.</p>
+    </header>
+
+    {% block content %}{% endblock %}
+</body>
+</html>
