@@ -24,11 +24,6 @@ def transcribe_audio(
     language: str | None = None,
 ):
     """
-    Transcribe audio and return:
-    - detected language info
-    - raw segment dictionaries
-    - merged transcript text
-
     language:
     - None => auto-detect
     - "en" => force English
@@ -51,22 +46,15 @@ def transcribe_audio(
     segments, info = model.transcribe(**transcribe_kwargs)
 
     raw_segments = []
-    transcript_lines = []
 
     for segment in segments:
-        segment_data = {
-            "start": round(segment.start, 2),
-            "end": round(segment.end, 2),
-            "text": segment.text.strip(),
-        }
-        raw_segments.append(segment_data)
-
-        transcript_lines.append(
-            f"[{format_timestamp(segment.start)} - {format_timestamp(segment.end)}] "
-            f"{segment.text.strip()}"
+        raw_segments.append(
+            {
+                "start": round(segment.start, 2),
+                "end": round(segment.end, 2),
+                "text": segment.text.strip(),
+            }
         )
-
-    transcript_text = "\n".join(transcript_lines)
 
     info_data = {
         "language": getattr(info, "language", None),
@@ -78,16 +66,7 @@ def transcribe_audio(
     return {
         "info": info_data,
         "segments": raw_segments,
-        "transcript_text": transcript_text,
     }
-
-
-def format_timestamp(seconds: float) -> str:
-    total_seconds = int(seconds)
-    hours = total_seconds // 3600
-    minutes = (total_seconds % 3600) // 60
-    secs = total_seconds % 60
-    return f"{hours:02}:{minutes:02}:{secs:02}"
 
 
 def save_transcript_json(output_path: str | Path, payload: dict) -> Path:

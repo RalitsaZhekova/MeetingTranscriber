@@ -5,7 +5,9 @@ from celery import shared_task
 from django.core.files import File
 
 from transcriber.models import TranscriptJob
+from transcriber.services.align import assign_speakers_to_transcript, build_speaker_labeled_text
 from transcriber.services.cleanup import safe_rmtree
+from transcriber.services.diarization import diarize_audio
 from transcriber.services.media import normalize_audio_to_wav
 from transcriber.services.transcription import transcribe_audio, save_transcript_json
 from transcriber.services.workspace import get_job_temp_dir
@@ -56,10 +58,25 @@ def process_uploaded_media(job_id: int):
             language=selected_language,
         )
 
-        save_transcript_json(temp_json_path, transcription_result)
+        diarization_segments = diarize_audio(normalized_path)
+
+        aligned_segments = assign_speakers_to_transcript(
+            transcription_result["segments"],
+            diarization_segments,
+        )
+
+        final_payload = {
+            "info": transcription_result["info"],
+            "diarization_segments": diarization_segments,
+            "segments": aligned_segments,
+        }
+
+        final_text = build_speaker_labeled_text(aligned_segments)
+
+        save_transcript_json(temp_json_path, final_payload)
 
         temp_txt_path.write_text(
-            transcription_result["transcript_text"],
+            final_text,
             encoding="utf-8",
         )
 
@@ -77,7 +94,7 @@ def process_uploaded_media(job_id: int):
                 save=False,
             )
 
-        job.transcript_text = transcription_result["transcript_text"]
+        job.transcript_text = final_text
         job.status = TranscriptJob.Status.COMPLETED
         job.save(
             update_fields=[
