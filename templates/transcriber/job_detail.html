@@ -33,5 +33,12 @@
         {% else %}
             <p class="muted">Transcript is not available yet.</p>
         {% endif %}
+
+        {% if job.normalized_audio_file %}
+            <p>
+                <strong>Normalized audio:</strong>
+                <a href="{{ job.normalized_audio_file.url }}" target="_blank">Open normalized WAV</a>
+            </p>
+        {% endif %}
     </div>
 {% endblock %}

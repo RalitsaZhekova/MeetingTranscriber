@@ -21,6 +21,12 @@ class TranscriptJob(models.Model):
 
     transcript_text = models.TextField(blank=True, null=True)
 
+    normalized_audio_file = models.FileField(
+        upload_to="processed/audio/%Y/%m/%d/",
+        blank=True,
+        null=True,
+    )
+
     transcript_json_file = models.FileField(
         upload_to="outputs/json/%Y/%m/%d/",
         blank=True,

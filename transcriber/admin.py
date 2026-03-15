@@ -11,6 +11,7 @@ class TranscriptJobAdmin(admin.ModelAdmin):
         "status",
         "created_at",
         "updated_at",
+        "normalized_audio_file"
     )
     list_filter = ("status", "created_at", "updated_at")
     search_fields = ("original_filename", "error_message", "transcript_text")

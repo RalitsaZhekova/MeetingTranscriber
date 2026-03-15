@@ -3,7 +3,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 
 from transcriber.forms import TranscriptJobForm
 from transcriber.models import TranscriptJob
-from .tasks import test_task
+from .tasks import test_task, process_uploaded_media
+
 
 # Create your views here.
 def home(request):
@@ -15,6 +16,7 @@ def upload_job(request):
         form = TranscriptJobForm(request.POST, request.FILES)
         if form.is_valid():
             job = form.save()
+            process_uploaded_media.delay(job.id)
             return redirect("job_detail", pk=job.pk)
     else:
         form = TranscriptJobForm()
