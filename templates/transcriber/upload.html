@@ -5,7 +5,7 @@
 {% block content %}
     <div class="card">
         <h2>Upload recording</h2>
-        <p class="muted">Supported formats will be handled later in processing. For now, just upload a file.</p>
+        <p class="muted">Upload an audio or video file and choose the transcription language mode.</p>
 
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
@@ -22,6 +22,16 @@
                 {% if form.uploaded_file.errors %}
                     <div style="color: red; margin-top: 8px;">
                         {{ form.uploaded_file.errors }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div style="margin-bottom: 16px;">
+                {{ form.selected_language.label_tag }}<br>
+                {{ form.selected_language }}
+                {% if form.selected_language.errors %}
+                    <div style="color: red; margin-top: 8px;">
+                        {{ form.selected_language.errors }}
                     </div>
                 {% endif %}
             </div>

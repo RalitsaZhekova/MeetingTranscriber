@@ -7,6 +7,7 @@
         <h2>Transcript Job #{{ job.id }}</h2>
 
         <p><strong>Original filename:</strong> {{ job.original_filename }}</p>
+        <p><strong>Selected language mode:</strong> {{ job.get_selected_language_display }}</p>
         <p><strong>Status:</strong> {{ job.get_status_display }}</p>
         <p><strong>Created:</strong> {{ job.created_at }}</p>
         <p><strong>Updated:</strong> {{ job.updated_at }}</p>

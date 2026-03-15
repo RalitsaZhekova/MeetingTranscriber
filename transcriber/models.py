@@ -8,8 +8,19 @@ class TranscriptJob(models.Model):
         COMPLETED = "completed", "Completed"
         FAILED = "failed", "Failed"
 
+    class LanguageChoice(models.TextChoices):
+        AUTO = "auto", "Auto detect"
+        ENGLISH = "en", "English"
+        BULGARIAN = "bg", "Bulgarian"
+
     uploaded_file = models.FileField(upload_to="uploads/%Y/%m/%d/")
     original_filename = models.CharField(max_length=255)
+
+    selected_language = models.CharField(
+        max_length=10,
+        choices=LanguageChoice.choices,
+        default=LanguageChoice.AUTO,
+    )
 
     status = models.CharField(
         max_length=20,

@@ -6,7 +6,11 @@ from .models import TranscriptJob
 class TranscriptJobForm(forms.ModelForm):
     class Meta:
         model = TranscriptJob
-        fields = ["uploaded_file"]
+        fields = ["uploaded_file", "selected_language"]
+        labels = {
+            "uploaded_file": "Recording file",
+            "selected_language": "Language mode",
+        }
 
     def save(self, commit=True):
         instance = super().save(commit=False)
