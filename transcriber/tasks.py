@@ -5,9 +5,10 @@ from celery import shared_task
 from django.core.files import File
 
 from transcriber.models import TranscriptJob
-from transcriber.services.cleanup import safe_unlink, safe_rmdir_if_empty
+from transcriber.services.cleanup import safe_rmtree
 from transcriber.services.media import normalize_audio_to_wav
 from transcriber.services.transcription import transcribe_audio, save_transcript_json
+from transcriber.services.workspace import get_job_temp_dir
 
 
 @shared_task
@@ -18,9 +19,7 @@ def test_task():
 @shared_task
 def process_uploaded_media(job_id: int):
     job = TranscriptJob.objects.get(pk=job_id)
-
-    temp_paths: list[Path] = []
-    input_path = None
+    temp_dir = None
 
     try:
         job.status = TranscriptJob.Status.PROCESSING
@@ -28,11 +27,13 @@ def process_uploaded_media(job_id: int):
         job.save(update_fields=["status", "error_message", "updated_at"])
 
         input_path = Path(job.uploaded_file.path)
+        temp_dir = get_job_temp_dir(job.id)
 
-        temp_output_path = input_path.parent / f"{input_path.stem}.normalized.wav"
-        temp_paths.append(temp_output_path)
+        normalized_path = temp_dir / "normalized.wav"
+        temp_json_path = temp_dir / "transcript.json"
+        temp_txt_path = temp_dir / "transcript.txt"
 
-        normalized_path = normalize_audio_to_wav(input_path, temp_output_path)
+        normalize_audio_to_wav(input_path, normalized_path)
 
         with normalized_path.open("rb") as f:
             job.normalized_audio_file.save(
@@ -54,11 +55,6 @@ def process_uploaded_media(job_id: int):
             model_size="medium",
             language=selected_language,
         )
-
-        temp_json_path = input_path.parent / f"{input_path.stem}.transcript.json"
-        temp_txt_path = input_path.parent / f"{input_path.stem}.transcript.txt"
-
-        temp_paths.extend([temp_json_path, temp_txt_path])
 
         save_transcript_json(temp_json_path, transcription_result)
 
@@ -100,9 +96,5 @@ def process_uploaded_media(job_id: int):
         raise
 
     finally:
-        for temp_path in temp_paths:
-            safe_unlink(temp_path)
-
-        # only removes the folder if it is empty
-        if "input_path" in locals():
-            safe_rmdir_if_empty(input_path.parent)
+        if temp_dir is not None:
+            safe_rmtree(temp_dir)
