@@ -1,0 +1,11 @@
+{% extends "transcriber/base.html" %}
+
+{% block title %}Task Triggered | Meeting Transcriber{% endblock %}
+
+{% block content %}
+    <div class="card">
+        <h2>Background task queued</h2>
+        <p>Your test task was sent to Celery.</p>
+        <p><strong>Task ID:</strong> {{ task_id }}</p>
+    </div>
+{% endblock %}
