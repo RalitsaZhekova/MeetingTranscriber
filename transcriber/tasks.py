@@ -5,6 +5,7 @@ from celery import shared_task
 from django.core.files import File
 
 from transcriber.models import TranscriptJob
+from transcriber.services.cleanup import safe_unlink, safe_rmdir_if_empty
 from transcriber.services.media import normalize_audio_to_wav
 from transcriber.services.transcription import transcribe_audio, save_transcript_json
 
@@ -18,13 +19,18 @@ def test_task():
 def process_uploaded_media(job_id: int):
     job = TranscriptJob.objects.get(pk=job_id)
 
+    temp_paths: list[Path] = []
+    input_path = None
+
     try:
         job.status = TranscriptJob.Status.PROCESSING
         job.error_message = ""
         job.save(update_fields=["status", "error_message", "updated_at"])
 
         input_path = Path(job.uploaded_file.path)
+
         temp_output_path = input_path.parent / f"{input_path.stem}.normalized.wav"
+        temp_paths.append(temp_output_path)
 
         normalized_path = normalize_audio_to_wav(input_path, temp_output_path)
 
@@ -37,7 +43,11 @@ def process_uploaded_media(job_id: int):
 
         job.save(update_fields=["normalized_audio_file", "updated_at"])
 
-        selected_language = None if job.selected_language == TranscriptJob.LanguageChoice.AUTO else job.selected_language
+        selected_language = (
+            None
+            if job.selected_language == TranscriptJob.LanguageChoice.AUTO
+            else job.selected_language
+        )
 
         transcription_result = transcribe_audio(
             normalized_path,
@@ -46,9 +56,12 @@ def process_uploaded_media(job_id: int):
         )
 
         temp_json_path = input_path.parent / f"{input_path.stem}.transcript.json"
+        temp_txt_path = input_path.parent / f"{input_path.stem}.transcript.txt"
+
+        temp_paths.extend([temp_json_path, temp_txt_path])
+
         save_transcript_json(temp_json_path, transcription_result)
 
-        temp_txt_path = input_path.parent / f"{input_path.stem}.transcript.txt"
         temp_txt_path.write_text(
             transcription_result["transcript_text"],
             encoding="utf-8",
@@ -85,3 +98,11 @@ def process_uploaded_media(job_id: int):
         job.error_message = str(exc)
         job.save(update_fields=["status", "error_message", "updated_at"])
         raise
+
+    finally:
+        for temp_path in temp_paths:
+            safe_unlink(temp_path)
+
+        # only removes the folder if it is empty
+        if "input_path" in locals():
+            safe_rmdir_if_empty(input_path.parent)
