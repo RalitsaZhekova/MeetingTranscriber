@@ -1,54 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Meeting Transcriber{% endblock %}</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 900px;
-            margin: 40px auto;
-            padding: 0 20px;
-            line-height: 1.6;
-        }
-
-        header {
-            margin-bottom: 30px;
-        }
-
-        .card {
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .muted {
-            color: #666;
-        }
-
-        a {
-            text-decoration: none;
-        }
-
-        button {
-            padding: 10px 14px;
-            cursor: pointer;
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    {% block extra_head %}{% endblock %}
 </head>
 <body>
-    <header>
-        <h1><a href="{% url 'home' %}">Meeting Transcriber</a></h1>
-        <p class="muted">Upload recordings and generate speaker-labeled transcripts.</p>
-        <p>
-            <a href="{% url 'home' %}">Home</a> |
-            <a href="{% url 'upload_job' %}">Upload</a> |
-            <a href="{% url 'job_list' %}">Jobs</a>
-        </p>
-    </header>
+    <div class="site-shell">
+        <header class="site-header">
+            <div class="site-header__inner">
+                <div class="brand">
+                    <h1 class="brand__title"><a href="{% url 'home' %}">Meeting Transcriber</a></h1>
+                    <p class="brand__tagline">Upload recordings and generate speaker-labeled transcripts.</p>
+                </div>
+                <nav class="site-nav" aria-label="Primary">
+                    <a class="site-nav__link{% if request.resolver_match.url_name == 'home' %} site-nav__link--active{% endif %}" href="{% url 'home' %}">Home</a>
+                    <a class="site-nav__link{% if request.resolver_match.url_name == 'upload_job' %} site-nav__link--active{% endif %}" href="{% url 'upload_job' %}">Upload</a>
+                    <a class="site-nav__link{% if request.resolver_match.url_name == 'job_list' or request.resolver_match.url_name == 'job_detail' %} site-nav__link--active{% endif %}" href="{% url 'job_list' %}">Jobs</a>
+                </nav>
+            </div>
+        </header>
 
-    {% block content %}{% endblock %}
+        <main class="site-main">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
 </body>
 </html>

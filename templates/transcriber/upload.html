@@ -3,50 +3,59 @@
 {% block title %}Upload | Meeting Transcriber{% endblock %}
 
 {% block content %}
-    <div class="card">
-        <h2>Upload recording</h2>
-        <p class="muted">Upload an audio or video file and choose the transcription settings.</p>
+    <section class="card">
+        <div class="stack-md">
+            <div>
+                <span class="eyebrow">New job</span>
+                <h2 class="section-title">Upload recording</h2>
+                <p class="section-copy">Add an audio or video file, choose the processing options, and create a new transcript job.</p>
+            </div>
 
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
+            <form method="post" enctype="multipart/form-data" class="form-grid">
+                {% csrf_token %}
 
-            {% if form.non_field_errors %}
-                <div style="color: red; margin-bottom: 12px;">
-                    {{ form.non_field_errors }}
+                {% if form.non_field_errors %}
+                    <div class="alert alert--error">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <div class="field">
+                    {{ form.uploaded_file.label_tag }}
+                    {{ form.uploaded_file }}
+                    <p class="field-help">Supported recordings can be uploaded directly and processed into a speaker-labeled transcript.</p>
+                    {% if form.uploaded_file.errors %}
+                        <div class="alert alert--error">
+                            {{ form.uploaded_file.errors }}
+                        </div>
+                    {% endif %}
                 </div>
-            {% endif %}
 
-            <div style="margin-bottom: 16px;">
-                {{ form.uploaded_file.label_tag }}<br>
-                {{ form.uploaded_file }}
-                {% if form.uploaded_file.errors %}
-                    <div style="color: red; margin-top: 8px;">
-                        {{ form.uploaded_file.errors }}
-                    </div>
-                {% endif %}
-            </div>
+                <div class="field">
+                    {{ form.selected_language.label_tag }}
+                    {{ form.selected_language }}
+                    {% if form.selected_language.errors %}
+                        <div class="alert alert--error">
+                            {{ form.selected_language.errors }}
+                        </div>
+                    {% endif %}
+                </div>
 
-            <div style="margin-bottom: 16px;">
-                {{ form.selected_language.label_tag }}<br>
-                {{ form.selected_language }}
-                {% if form.selected_language.errors %}
-                    <div style="color: red; margin-top: 8px;">
-                        {{ form.selected_language.errors }}
-                    </div>
-                {% endif %}
-            </div>
+                <div class="field">
+                    {{ form.expected_speaker_count.label_tag }}
+                    {{ form.expected_speaker_count }}
+                    {% if form.expected_speaker_count.errors %}
+                        <div class="alert alert--error">
+                            {{ form.expected_speaker_count.errors }}
+                        </div>
+                    {% endif %}
+                </div>
 
-            <div style="margin-bottom: 16px;">
-                {{ form.expected_speaker_count.label_tag }}<br>
-                {{ form.expected_speaker_count }}
-                {% if form.expected_speaker_count.errors %}
-                    <div style="color: red; margin-top: 8px;">
-                        {{ form.expected_speaker_count.errors }}
-                    </div>
-                {% endif %}
-            </div>
-
-            <button type="submit">Create job</button>
-        </form>
-    </div>
+                <div class="actions-inline">
+                    <button type="submit">Create job</button>
+                    <a class="button button--secondary" href="{% url 'job_list' %}">View job history</a>
+                </div>
+            </form>
+        </div>
+    </section>
 {% endblock %}

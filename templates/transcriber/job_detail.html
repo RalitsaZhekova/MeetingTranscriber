@@ -3,44 +3,66 @@
 {% block title %}Job #{{ job.id }} | Meeting Transcriber{% endblock %}
 
 {% block content %}
-    <div class="card">
-        <h2>Transcript Job #{{ job.id }}</h2>
+    <div class="stack-lg">
+        <section class="card stack-md">
+            <div class="actions-inline actions-inline--between">
+                <div>
+                    <span class="eyebrow">Job detail</span>
+                    <h2 class="section-title">Transcript job #{{ job.id }}</h2>
+                </div>
+                <span class="badge badge--{{ job.status }}">{{ job.get_status_display }}</span>
+            </div>
 
-        <p><strong>Original filename:</strong> {{ job.original_filename }}</p>
-        <p><strong>Selected language mode:</strong> {{ job.get_selected_language_display }}</p>
-        <p><strong>Expected speaker count:</strong> {{ job.get_expected_speaker_count_display }}</p>
-        <p><strong>Status:</strong> {{ job.get_status_display }}</p>
-        <p><strong>Created:</strong> {{ job.created_at }}</p>
-        <p><strong>Updated:</strong> {{ job.updated_at }}</p>
+            <div class="meta-grid">
+                <div class="meta-item">
+                    <p class="meta-item__label">Original filename</p>
+                    <p class="meta-item__value">{{ job.original_filename }}</p>
+                </div>
+                <div class="meta-item">
+                    <p class="meta-item__label">Language mode</p>
+                    <p class="meta-item__value">{{ job.get_selected_language_display }}</p>
+                </div>
+                <div class="meta-item">
+                    <p class="meta-item__label">Expected speakers</p>
+                    <p class="meta-item__value">{{ job.get_expected_speaker_count_display }}</p>
+                </div>
+                <div class="meta-item">
+                    <p class="meta-item__label">Created</p>
+                    <p class="meta-item__value">{{ job.created_at|date:"Y-m-d H:i" }}</p>
+                </div>
+                <div class="meta-item">
+                    <p class="meta-item__label">Updated</p>
+                    <p class="meta-item__value">{{ job.updated_at|date:"Y-m-d H:i" }}</p>
+                </div>
+            </div>
 
-        {% if job.uploaded_file %}
-            <p>
-                <strong>Uploaded file:</strong>
-                <a href="{{ job.uploaded_file.url }}" target="_blank">Open uploaded file</a>
-            </p>
-        {% endif %}
+            <div class="list-inline">
+                <a class="button button--secondary" href="{% url 'job_list' %}">Back to jobs</a>
+                {% if job.uploaded_file %}
+                    <a class="button button--ghost" href="{{ job.uploaded_file.url }}" target="_blank" rel="noopener noreferrer">Open uploaded file</a>
+                {% endif %}
+                {% if job.normalized_audio_file %}
+                    <a class="button button--ghost" href="{{ job.normalized_audio_file.url }}" target="_blank" rel="noopener noreferrer">Open normalized WAV</a>
+                {% endif %}
+            </div>
+        </section>
 
         {% if job.error_message %}
-            <div style="margin-top: 16px; color: red;">
-                <strong>Error:</strong>
-                <pre style="white-space: pre-wrap;">{{ job.error_message }}</pre>
-            </div>
+            <section class="panel">
+                <h3 class="panel__title">Error details</h3>
+                <div class="alert alert--error">
+                    <pre class="code-block">{{ job.error_message }}</pre>
+                </div>
+            </section>
         {% endif %}
 
-        {% if job.transcript_text %}
-            <div style="margin-top: 20px;">
-                <h3>Transcript</h3>
-                <pre style="white-space: pre-wrap;">{{ job.transcript_text }}</pre>
-            </div>
-        {% else %}
-            <p class="muted">Transcript is not available yet.</p>
-        {% endif %}
-
-        {% if job.normalized_audio_file %}
-            <p>
-                <strong>Normalized audio:</strong>
-                <a href="{{ job.normalized_audio_file.url }}" target="_blank">Open normalized WAV</a>
-            </p>
-        {% endif %}
+        <section class="panel">
+            <h3 class="panel__title">Transcript</h3>
+            {% if job.transcript_text %}
+                <pre class="code-block">{{ job.transcript_text }}</pre>
+            {% else %}
+                <p class="muted">Transcript is not available yet.</p>
+            {% endif %}
+        </section>
     </div>
 {% endblock %}

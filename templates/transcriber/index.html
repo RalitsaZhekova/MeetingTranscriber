@@ -3,16 +3,55 @@
 {% block title %}Home | Meeting Transcriber{% endblock %}
 
 {% block content %}
-    <div class="card">
-        <h2>Upload a meeting recording</h2>
-        <p>Create a new transcription job from an audio or video file.</p>
-        <p>
-            <a href="{% url 'upload_job' %}">
-                <button type="button">Upload file</button>
-            </a>
-            <a href="{% url 'job_list' %}">
-                <button type="button">View jobs</button>
-            </a>
-        </p>
+    <div class="stack-lg">
+        <section class="card hero">
+            <div class="stack-md">
+                <span class="eyebrow">Meeting transcripts</span>
+                <h2 class="hero__title">Turn recorded meetings into readable, speaker-labeled transcripts.</h2>
+                <p class="hero__copy">Meetings are hard to revisit when the important decisions are buried in raw recordings. This app turns spoken conversation into structured text you can scan, review, and return to without replaying the whole session.</p>
+                <div class="hero__actions">
+                    <a class="button" href="{% url 'upload_job' %}">Upload recording</a>
+                </div>
+            </div>
+            <div class="metric-grid">
+                <div class="metric">
+                    <p class="metric__value">1</p>
+                    <p class="metric__label">Upload a single meeting file to start a transcription job</p>
+                </div>
+                <div class="metric">
+                    <p class="metric__value">2</p>
+                    <p class="metric__label">Track progress from upload through processing to completion</p>
+                </div>
+                <div class="metric">
+                    <p class="metric__value">3</p>
+                    <p class="metric__label">Open the finished transcript and related output files</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="card">
+            <div class="stack-md">
+                <h3 class="section-title">How it works</h3>
+                <p class="section-copy">The app is built for a simple workflow: submit a recording, monitor its status, and review the generated transcript when processing finishes.</p>
+                <div class="meta-grid">
+                    <div class="meta-item">
+                        <p class="meta-item__label">Upload and configure</p>
+                        <p class="meta-item__value">Choose your recording, set language mode, and select the expected speaker count before creating the job.</p>
+                    </div>
+                    <div class="meta-item">
+                        <p class="meta-item__label">Track processing</p>
+                        <p class="meta-item__value">Each job clearly shows whether it is uploaded, processing, completed, or failed.</p>
+                    </div>
+                    <div class="meta-item">
+                        <p class="meta-item__label">Review results</p>
+                        <p class="meta-item__value">Open the job detail page to read the transcript and access uploaded or normalized audio files.</p>
+                    </div>
+                    <div class="meta-item">
+                        <p class="meta-item__label">Use the history page</p>
+                        <p class="meta-item__value">Browse previous jobs, filter by status, and return to any transcript from the jobs list.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
     </div>
 {% endblock %}

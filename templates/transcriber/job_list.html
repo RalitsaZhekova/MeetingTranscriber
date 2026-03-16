@@ -3,54 +3,76 @@
 {% block title %}Jobs | Meeting Transcriber{% endblock %}
 
 {% block content %}
-    <div class="card">
-        <h2>Transcript Jobs</h2>
+    <section class="card stack-md">
+        <div class="stack-md">
+            <div>
+                <span class="eyebrow">History</span>
+                <h2 class="section-title">Transcript jobs</h2>
+                <p class="section-copy">Review every uploaded file, filter by processing state, and open each job for transcript details and output files.</p>
+            </div>
 
-        <form method="get" style="margin-bottom: 20px;">
-            <label for="status">Filter by status:</label>
-            <select name="status" id="status">
-                <option value="">All</option>
-                {% for value, label in status_choices %}
-                    <option value="{{ value }}" {% if status_filter == value %}selected{% endif %}>
-                        {{ label }}
-                    </option>
-                {% endfor %}
-            </select>
-            <button type="submit">Apply</button>
-            <a href="{% url 'job_list' %}" style="margin-left: 10px;">Clear</a>
-        </form>
+            <form method="get" class="form-grid">
+                <div class="field">
+                    <label for="status">Filter by status</label>
+                    <select name="status" id="status">
+                        <option value="">All statuses</option>
+                        {% for value, label in status_choices %}
+                            <option value="{{ value }}" {% if status_filter == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="actions-inline">
+                    <button type="submit">Apply filter</button>
+                    <a class="button button--secondary" href="{% url 'job_list' %}">Clear</a>
+                </div>
+            </form>
+        </div>
 
         {% if jobs %}
-            <table style="width: 100%; border-collapse: collapse;">
-                <thead>
-                    <tr style="text-align: left; border-bottom: 1px solid #ddd;">
-                        <th style="padding: 10px 8px;">ID</th>
-                        <th style="padding: 10px 8px;">Filename</th>
-                        <th style="padding: 10px 8px;">Status</th>
-                        <th style="padding: 10px 8px;">Language</th>
-                        <th style="padding: 10px 8px;">Speakers</th>
-                        <th style="padding: 10px 8px;">Created</th>
-                        <th style="padding: 10px 8px;">Open</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for job in jobs %}
-                        <tr style="border-bottom: 1px solid #eee;">
-                            <td style="padding: 10px 8px;">{{ job.id }}</td>
-                            <td style="padding: 10px 8px;">{{ job.original_filename }}</td>
-                            <td style="padding: 10px 8px;">{{ job.get_status_display }}</td>
-                            <td style="padding: 10px 8px;">{{ job.get_selected_language_display }}</td>
-                            <td style="padding: 10px 8px;">{{ job.get_expected_speaker_count_display }}</td>
-                            <td style="padding: 10px 8px;">{{ job.created_at|date:"Y-m-d H:i" }}</td>
-                            <td style="padding: 10px 8px;">
-                                <a href="{% url 'job_detail' job.id %}">View</a>
-                            </td>
+            <div class="table-wrap">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Filename</th>
+                            <th>Status</th>
+                            <th>Language</th>
+                            <th>Speakers</th>
+                            <th>Created</th>
+                            <th>Open</th>
                         </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {% for job in jobs %}
+                            <tr>
+                                <td>#{{ job.id }}</td>
+                                <td>{{ job.original_filename }}</td>
+                                <td>
+                                    <span class="badge badge--{{ job.status }}">
+                                        {{ job.get_status_display }}
+                                    </span>
+                                </td>
+                                <td>{{ job.get_selected_language_display }}</td>
+                                <td>{{ job.get_expected_speaker_count_display }}</td>
+                                <td>{{ job.created_at|date:"Y-m-d H:i" }}</td>
+                                <td>
+                                    <a class="button button--ghost" href="{% url 'job_detail' job.id %}">View</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         {% else %}
-            <p class="muted">No jobs found.</p>
+            <div class="card card--muted empty-state">
+                <p class="section-title">No jobs found</p>
+                <p class="muted">Create a transcription job to start building your history page.</p>
+                <div class="actions-inline actions-inline--center">
+                    <a class="button" href="{% url 'upload_job' %}">Upload recording</a>
+                </div>
+            </div>
         {% endif %}
-    </div>
+    </section>
 {% endblock %}
