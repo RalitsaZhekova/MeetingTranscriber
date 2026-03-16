@@ -13,6 +13,12 @@ class TranscriptJob(models.Model):
         ENGLISH = "en", "English"
         BULGARIAN = "bg", "Bulgarian"
 
+    class SpeakerCountChoice(models.TextChoices):
+        AUTO = "auto", "Auto detect"
+        TWO = "2", "2 speakers"
+        THREE = "3", "3 speakers"
+        FOUR = "4", "4 speakers"
+
     uploaded_file = models.FileField(upload_to="uploads/%Y/%m/%d/")
     original_filename = models.CharField(max_length=255)
 
@@ -20,6 +26,12 @@ class TranscriptJob(models.Model):
         max_length=10,
         choices=LanguageChoice.choices,
         default=LanguageChoice.AUTO,
+    )
+
+    expected_speaker_count = models.CharField(
+        max_length=10,
+        choices=SpeakerCountChoice.choices,
+        default=SpeakerCountChoice.AUTO,
     )
 
     status = models.CharField(

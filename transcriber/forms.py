@@ -6,10 +6,11 @@ from .models import TranscriptJob
 class TranscriptJobForm(forms.ModelForm):
     class Meta:
         model = TranscriptJob
-        fields = ["uploaded_file", "selected_language"]
+        fields = ["uploaded_file", "selected_language", "expected_speaker_count"]
         labels = {
             "uploaded_file": "Recording file",
             "selected_language": "Language mode",
+            "expected_speaker_count": "Expected speaker count",
         }
 
     def save(self, commit=True):

@@ -52,13 +52,22 @@ def process_uploaded_media(job_id: int):
             else job.selected_language
         )
 
+        expected_speaker_count = (
+            None
+            if job.expected_speaker_count == TranscriptJob.SpeakerCountChoice.AUTO
+            else int(job.expected_speaker_count)
+        )
+
         transcription_result = transcribe_audio(
             normalized_path,
             model_size="medium",
             language=selected_language,
         )
 
-        diarization_segments = diarize_audio(normalized_path)
+        diarization_segments = diarize_audio(
+            normalized_path,
+            num_speakers=expected_speaker_count,
+        )
 
         aligned_segments = assign_speakers_to_transcript(
             transcription_result["segments"],
