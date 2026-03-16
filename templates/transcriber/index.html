@@ -5,17 +5,14 @@
 {% block content %}
     <div class="card">
         <h2>Upload a meeting recording</h2>
-        <p>Upload an audio or video file to create a transcript job.</p>
+        <p>Create a new transcription job from an audio or video file.</p>
         <p>
             <a href="{% url 'upload_job' %}">
                 <button type="button">Upload file</button>
             </a>
-        </p>
-        <p>
-            <a href="{% url 'trigger_test_task' %}">
-                <button type="button">Run test background task</button>
+            <a href="{% url 'job_list' %}">
+                <button type="button">View jobs</button>
             </a>
         </p>
-
     </div>
 {% endblock %}

@@ -29,6 +29,22 @@ def job_detail(request, pk):
     return render(request, "transcriber/job_detail.html", {"job": job})
 
 
+def job_list(request):
+    status_filter = request.GET.get("status", "").strip()
+
+    jobs = TranscriptJob.objects.all()
+
+    if status_filter:
+        jobs = jobs.filter(status=status_filter)
+
+    context = {
+        "jobs": jobs,
+        "status_filter": status_filter,
+        "status_choices": TranscriptJob.Status.choices,
+    }
+    return render(request, "transcriber/job_list.html", context)
+
+
 def trigger_test_task(request):
     task = test_task.delay()
     return render(

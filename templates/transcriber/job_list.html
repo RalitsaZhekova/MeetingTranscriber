@@ -1,0 +1,56 @@
+{% extends "transcriber/base.html" %}
+
+{% block title %}Jobs | Meeting Transcriber{% endblock %}
+
+{% block content %}
+    <div class="card">
+        <h2>Transcript Jobs</h2>
+
+        <form method="get" style="margin-bottom: 20px;">
+            <label for="status">Filter by status:</label>
+            <select name="status" id="status">
+                <option value="">All</option>
+                {% for value, label in status_choices %}
+                    <option value="{{ value }}" {% if status_filter == value %}selected{% endif %}>
+                        {{ label }}
+                    </option>
+                {% endfor %}
+            </select>
+            <button type="submit">Apply</button>
+            <a href="{% url 'job_list' %}" style="margin-left: 10px;">Clear</a>
+        </form>
+
+        {% if jobs %}
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="text-align: left; border-bottom: 1px solid #ddd;">
+                        <th style="padding: 10px 8px;">ID</th>
+                        <th style="padding: 10px 8px;">Filename</th>
+                        <th style="padding: 10px 8px;">Status</th>
+                        <th style="padding: 10px 8px;">Language</th>
+                        <th style="padding: 10px 8px;">Speakers</th>
+                        <th style="padding: 10px 8px;">Created</th>
+                        <th style="padding: 10px 8px;">Open</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for job in jobs %}
+                        <tr style="border-bottom: 1px solid #eee;">
+                            <td style="padding: 10px 8px;">{{ job.id }}</td>
+                            <td style="padding: 10px 8px;">{{ job.original_filename }}</td>
+                            <td style="padding: 10px 8px;">{{ job.get_status_display }}</td>
+                            <td style="padding: 10px 8px;">{{ job.get_selected_language_display }}</td>
+                            <td style="padding: 10px 8px;">{{ job.get_expected_speaker_count_display }}</td>
+                            <td style="padding: 10px 8px;">{{ job.created_at|date:"Y-m-d H:i" }}</td>
+                            <td style="padding: 10px 8px;">
+                                <a href="{% url 'job_detail' job.id %}">View</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="muted">No jobs found.</p>
+        {% endif %}
+    </div>
+{% endblock %}
