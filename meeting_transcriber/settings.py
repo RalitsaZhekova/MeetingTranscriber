@@ -21,6 +21,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
 
 
+def get_env(name: str, default: str | None = None, *, required: bool = False) -> str | None:
+    value = os.getenv(name, default)
+    if required and not value:
+        raise ValueError(f"Missing required environment variable: {name}")
+    return value
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
@@ -86,9 +93,17 @@ WSGI_APPLICATION = 'meeting_transcriber.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": get_env("POSTGRES_DB", required=True),
+        "USER": get_env("POSTGRES_USER", required=True),
+        "PASSWORD": get_env("POSTGRES_PASSWORD", required=True),
+        "HOST": get_env("POSTGRES_HOST", "127.0.0.1"),
+        "PORT": get_env("POSTGRES_PORT", "5432"),
+        "CONN_MAX_AGE": int(get_env("POSTGRES_CONN_MAX_AGE", "60")),
+        "TEST": {
+            "NAME": get_env("POSTGRES_TEST_DB") or get_env("POSTGRES_DB", required=True),
+        },
     }
 }
 

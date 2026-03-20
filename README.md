@@ -33,9 +33,17 @@ pip install -r requirements.txt
 Create a local `.env` file based on `.env.example`:
 
 ```env
-DEBUG=True
-SECRET_KEY=change-me
-ALLOWED_HOSTS=127.0.0.1,localhost
+DJANGO_DEBUG=True
+DJANGO_SECRET_KEY=change-me
+DJANGO_ALLOWED_HOSTS=127.0.0.1,localhost
+
+POSTGRES_DB=meeting_transcriber
+POSTGRES_TEST_DB=meeting_transcriber
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=change-me
+POSTGRES_HOST=127.0.0.1
+POSTGRES_PORT=5432
+POSTGRES_CONN_MAX_AGE=60
 
 CELERY_BROKER_URL=redis://127.0.0.1:6379/0
 CELERY_RESULT_BACKEND=redis://127.0.0.1:6379/1
@@ -93,6 +101,7 @@ celery -A meeting_transcriber worker --loglevel=info --pool=solo
 Before running the project locally, make sure you have:
 
 - Python 3.11 or a compatible version
+- PostgreSQL 14+ or a compatible version
 - Redis
 - FFmpeg installed and available in your system `PATH`
 - a Hugging Face account
@@ -133,9 +142,10 @@ docker start meeting-transcriber-redis
 
 ### Environment Variables
 
+- `DJANGO_SECRET_KEY` is required for Django cryptographic signing.
+- `POSTGRES_DB`, `POSTGRES_USER`, and `POSTGRES_PASSWORD` are required for database connectivity.
 - `HF_TOKEN` is required for diarization model access.
 - Keep `.env` private and never commit it.
-- Commit `.env.example` instead.
 
 ## Using the Application
 
@@ -177,8 +187,6 @@ Current known limitations:
 - transcript-to-speaker alignment is currently segment-based and can misassign short utterances
 - no user authentication yet
 - no production deployment configuration yet
-- development currently uses SQLite
-- PostgreSQL support is planned
 
 ## Tech Stack
 
@@ -221,9 +229,9 @@ This improves transcription and diarization stability.
 
 ### Database
 
-The current development setup uses SQLite for simplicity.
+The application uses PostgreSQL for both the main runtime database and the test database configuration.
 
-The long-term plan is to move to PostgreSQL for production. The codebase is being kept migration-friendly by:
+The codebase remains ORM-driven and migration-friendly by:
 
 - following Django ORM conventions
 - avoiding database-specific logic
@@ -243,13 +251,9 @@ The current implementation mitigates the main decoding issue by passing normaliz
 
 Planned improvements include:
 
-- expected speaker count selection
 - better diarization quality for short speaker turns
 - improved alignment between transcript and speaker turns
-- transcript job list and history page
 - safer deletion flow with file cleanup
-- PostgreSQL support
-- improved UI styling
 - user authentication
 - deployment configuration
 - transcript summarization
